@@ -3,8 +3,10 @@ package api
 import (
 	"context"
 	"fmt"
+	"go_shop/go_shop_api/user_web/global"
 	"go_shop/go_shop_api/user_web/proto"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -49,9 +51,12 @@ func HandleGrpcErrorToHttp(err error, c *gin.Context) {
 
 func GetUserList(ctx *gin.Context) {
 
-	ip := "127.0.0.1"
-	port := 50051
-	userConn, err := grpc.Dial(fmt.Sprintf("%s:%d", ip, port), grpc.WithInsecure(), grpc.FailOnNonTempDialError(true), grpc.WithBlock())
+	addr := fmt.Sprintf("%s:%d", global.ServerConfig.UserServerInfo.Host, global.ServerConfig.UserServerInfo.Port)
+
+	// ip := "127.0.0.1"
+	// port := 50051
+	// fmt.Sprintf("%s:%d", ip, port)
+	userConn, err := grpc.Dial(addr, grpc.WithInsecure(), grpc.FailOnNonTempDialError(true), grpc.WithBlock())
 
 	if err != nil {
 		zap.S().Errorw("[GetUserList] 连接用户服务失败",
@@ -60,9 +65,14 @@ func GetUserList(ctx *gin.Context) {
 
 	userSrvCli := proto.NewUserClient(userConn)
 
+	pn := ctx.DefaultQuery("pn", "0")
+	pnInt, _ := strconv.Atoi(pn)
+	pSize := ctx.DefaultQuery("psize", "0")
+	pSizeInt, _ := strconv.Atoi(pSize)
+
 	rsp, err := userSrvCli.GetUserList(context.Background(), &proto.PageInfo{
-		Pn:    0,
-		PSize: 3,
+		Pn:    uint32(pnInt),    //0,
+		PSize: uint32(pSizeInt), // 3,
 	})
 
 	if err != nil {
@@ -89,8 +99,8 @@ func GetUserList(ctx *gin.Context) {
 			NickName: val.NickName,
 			// Birthday: time.Time(time.Unix(int64(val.BirthDay), 0)).Format("2006-01-02"),
 			Birthday: response.JsonTime(time.Unix(int64(val.BirthDay), 0)),
-			Gender: val.Gender,
-			Mobile: val.Mobile,
+			Gender:   val.Gender,
+			Mobile:   val.Mobile,
 		}
 
 		result = append(result, user)

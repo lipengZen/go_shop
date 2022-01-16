@@ -1,0 +1,6 @@
+name: 'user-web'
+port: 9023
+
+user_srv:
+  host: "127.0.0.1"
+  port: 50051 
