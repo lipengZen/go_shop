@@ -14,6 +14,7 @@ func InitUserRouter(Router *gin.RouterGroup) *gin.RouterGroup {
 	zap.S().Info("配置用户相关的url")
 	{
 		UserRouter.GET("list", api.GetUserList)
+		UserRouter.POST("pwd_login", api.PassWordLogin)
 
 	}
 

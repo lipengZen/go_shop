@@ -3,10 +3,12 @@ package api
 import (
 	"context"
 	"fmt"
+	"go_shop/go_shop_api/user_web/forms"
 	"go_shop/go_shop_api/user_web/global"
 	"go_shop/go_shop_api/user_web/proto"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +16,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/go-playground/validator/v10"
 
 	"go_shop/go_shop_api/user_web/global/response"
 )
@@ -47,6 +51,20 @@ func HandleGrpcErrorToHttp(err error, c *gin.Context) {
 			}
 		}
 	}
+}
+
+func HandlerValidatorError(ctx *gin.Context, err error) {
+
+	errs, ok := err.(validator.ValidationErrors)
+	if !ok {
+		ctx.JSON(http.StatusOK, gin.H{
+			"msg": err.Error(),
+		})
+	}
+	ctx.JSON(http.StatusBadRequest, gin.H{
+		"error": removeTopStruct(errs.Translate(global.Trans)),
+	})
+
 }
 
 func GetUserList(ctx *gin.Context) {
@@ -107,5 +125,24 @@ func GetUserList(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, result)
+
+}
+
+func removeTopStruct(fileds map[string]string) map[string]string {
+	rsp := map[string]string{}
+	for field, err := range fileds {
+		rsp[field[strings.Index(field, ".")+1:]] = err
+	}
+	return rsp
+}
+
+func PassWordLogin(ctx *gin.Context) {
+
+	// 进行表单验证
+	passWordLoginForm := forms.PassWordLoginForm{}
+	if err := ctx.ShouldBind(&passWordLoginForm); err != nil {
+		HandlerValidatorError(ctx, err)
+		return
+	}
 
 }

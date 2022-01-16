@@ -5,7 +5,12 @@ import (
 	"go_shop/go_shop_api/user_web/global"
 	"go_shop/go_shop_api/user_web/initialize"
 
+	"github.com/gin-gonic/gin/binding"
+	ut "github.com/go-playground/universal-translator"
+	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
+
+	myvalidator "go_shop/go_shop_api/validator"
 )
 
 func main() {
@@ -18,6 +23,23 @@ func main() {
 
 	// 3.初始化 routers
 	Router := initialize.Routers()
+
+	// 4.初始化翻译
+	if err := initialize.InitTrans("zh"); err != nil {
+		zap.S().Errorf("初始化翻译 err:", err)
+		return
+	}
+
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		v.RegisterValidation("mobile", myvalidator.ValidateMobile)
+		_ = v.RegisterValidation("mobile", myvalidator.ValidateMobile)
+		_ = v.RegisterTranslation("mobile", global.Trans, func(ut ut.Translator) error {
+			return ut.Add("mobile", "{0} 非法的手机号码!", true) // see universal-translator for details
+		}, func(ut ut.Translator, fe validator.FieldError) string {
+			t, _ := ut.T("mobile", fe.Field())
+			return t
+		})
+	}
 
 	// port := 9023
 	/*
