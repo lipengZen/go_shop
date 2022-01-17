@@ -4,3 +4,15 @@ port: 9023
 user_srv:
   host: "127.0.0.1"
   port: 50051 
+
+jwt:
+  key: 'KuKRu_%9}&GfG-ggdN[c@6w%?dMDC(Wn'
+  
+sms:
+  key: ''
+  secrect: ''
+  expire: 300
+
+redis:
+  host: '127.0.0.1'
+  port: '6379'

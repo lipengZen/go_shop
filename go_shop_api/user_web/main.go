@@ -10,7 +10,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 
-	myvalidator "go_shop/go_shop_api/validator"
+	myvalidator "go_shop/go_shop_api/user_web/validator"
 )
 
 func main() {
