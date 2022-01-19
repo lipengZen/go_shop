@@ -56,11 +56,15 @@ func TestGetUserList() { //t *testing.T
 
 }
 
-func main() {
+/* 
+  init方法中的 50051 已经是 获取可用端口了
+*/
 
-	Init()
-	defer conn.Close()
+// func main() {
 
-	TestGetUserList() //&testing.T{})
+// 	Init()
+// 	defer conn.Close()
 
-}
+// 	TestGetUserList() //&testing.T{})
+
+// }

@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"go_shop/go_shop_api/user_web/global"
 	"go_shop/go_shop_api/user_web/initialize"
+	"go_shop/go_shop_api/user_web/utils"
 
 	"github.com/gin-gonic/gin/binding"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
+	"github.com/spf13/viper"
 	"go.uber.org/zap"
 
 	myvalidator "go_shop/go_shop_api/user_web/validator"
@@ -28,6 +30,19 @@ func main() {
 	if err := initialize.InitTrans("zh"); err != nil {
 		zap.S().Errorf("初始化翻译 err:", err)
 		return
+	}
+
+	// 5.初始化srv的连接
+	initialize.InitSrvConn()
+
+	viper.AutomaticEnv()
+	//如果是本地开发环境端口号固定，线上环境启动获取端口号
+	debug := viper.GetBool("GO_SHOP_DEBUG")
+	if !debug {
+		port, err := utils.GetFreePort()
+		if err == nil {
+			global.ServerConfig.Port = port
+		}
 	}
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {

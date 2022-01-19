@@ -17,3 +17,5 @@ var (
 
 	UserSrvClient proto.UserClient
 )
+
+
