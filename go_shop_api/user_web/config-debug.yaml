@@ -1,23 +1,31 @@
-name: 'user-web'
-port: 9023
+host: '172.18.0.1'
+port: 8848
+namespace: 'ba63c7bc-827d-49fb-9d56-0cbf184c420c'
+user: 'nacos'
+password: 'nacos'
+dataid: 'user_web.json'
+group: 'dev'
 
-user_srv:
-  # host: "127.0.0.1"  #直接通过name去consul获取
-  # port: 50051 
-  name: 'user_srv'
+# name: 'user-web'
+# port: 9023
 
-jwt:
-  key: 'KuKRu_%9}&GfG-ggdN[c@6w%?dMDC(Wn'
+# user_srv:
+#   # host: "127.0.0.1"  #直接通过name去consul获取
+#   # port: 50051 
+#   name: 'user_srv'
+
+# jwt:
+#   key: 'KuKRu_%9}&GfG-ggdN[c@6w%?dMDC(Wn'
   
-sms:
-  key: ''
-  secrect: ''
-  expire: 300
+# sms:
+#   key: ''
+#   secrect: ''
+#   expire: 300
 
-redis:
-  host: '127.0.0.1'
-  port: '6379'
+# redis:
+#   host: '127.0.0.1'
+#   port: '6379'
 
-consul:
-  host: '127.0.0.1'
-  port: '8500'
+# consul:
+#   host: '127.0.0.1'
+#   port: '8500'

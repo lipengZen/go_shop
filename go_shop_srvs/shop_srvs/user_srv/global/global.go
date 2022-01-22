@@ -10,6 +10,7 @@ var (
 	DB           *gorm.DB
 	ServerConfig config.ServerConfig
 	// NacosConfig config.NacosConfig
+	NacosConfig *config.NacosConfig = &config.NacosConfig{}
 )
 
 func init() {

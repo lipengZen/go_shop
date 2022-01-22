@@ -6,11 +6,29 @@ import (
 	"go_shop/go_shop_api/user_web/proto"
 
 	"github.com/hashicorp/consul/api"
+	_ "github.com/mbobakov/grpc-consul-resolver" // It's important
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
 
 func InitSrvConn() {
+
+	consulInfo := global.ServerConfig.ConsulInfo
+
+	userConn, err := grpc.Dial(
+		fmt.Sprintf("consul://%s:%d/%s?wait=14s", consulInfo.Host, consulInfo.Port, global.ServerConfig.UserSrvInfo.Name), // tag不能写错
+		grpc.WithInsecure(),
+		grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy": "round_robin"}`),
+	)
+	if err != nil {
+		zap.S().Fatal("用户服务不可达", err)
+	}
+
+	global.UserSrvClient = proto.NewUserClient(userConn)
+
+}
+
+func InitSrvConn2() {
 
 	// 从注册中心获取用户服务的信息
 	// 服务注册
@@ -25,7 +43,7 @@ func InitSrvConn() {
 		panic(err)
 	}
 
-	data, err := client.Agent().ServicesWithFilter(fmt.Sprintf(`Service=="%s"`, global.ServerConfig.UserServerInfo.Name))
+	data, err := client.Agent().ServicesWithFilter(fmt.Sprintf(`Service=="%s"`, global.ServerConfig.UserSrvInfo.Name))
 
 	if err != nil {
 		panic(err)

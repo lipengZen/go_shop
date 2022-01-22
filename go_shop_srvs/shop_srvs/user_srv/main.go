@@ -3,8 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/hashicorp/consul/api"
+	uuid "github.com/satori/go.uuid"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -72,7 +76,8 @@ func main() {
 	//生成注册对象
 	registration := new(api.AgentServiceRegistration)
 	registration.Name = global.ServerConfig.Name
-	registration.ID = global.ServerConfig.Name
+	serviceID := fmt.Sprintf("%s", uuid.NewV4())
+	registration.ID = serviceID //global.ServerConfig.Name
 	registration.Port = *Port
 	registration.Tags = []string{"user_srv", "lee", ""}
 	registration.Address = "172.18.0.1"
@@ -84,9 +89,20 @@ func main() {
 		panic(err)
 	}
 
-	err = server.Serve(lis)
-	if err != nil {
-		panic("failed to start grpc:" + err.Error())
+	go func() {
+		err = server.Serve(lis)
+		if err != nil {
+			panic("failed to start grpc:" + err.Error())
+		}
+	}()
+
+	// 接收终止信号
+	quit := make(chan os.Signal)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	if err = client.Agent().ServiceDeregister(serviceID); err != nil {
+		zap.S().Info("注销失败 err: ", err)
+		return
 	}
 
 }
