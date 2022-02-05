@@ -7,12 +7,11 @@ import (
 )
 
 type BaseModel struct {
-	ID        int32     `gorm:"primary_key"`
-	CreatedAt time.Time `gorm:"column:add_time"`
-	UpdatedAt time.Time `gorm:"column:update_time"`
-	DeleteAt  gorm.DeletedAt
-
-	IsDeleted bool
+	ID        int32          `gorm:"primary_key"`
+	CreatedAt time.Time      `gorm:"column:add_time"`
+	UpdatedAt time.Time      `gorm:"column:update_time"`
+	DeleteAt  gorm.DeletedAt `json:"-"`
+	IsDeleted bool           `json:"-"`
 }
 
 /*
@@ -20,7 +19,7 @@ type BaseModel struct {
 		1.对称加密
 		2.非对称加密
 		3. md5 信息摘要算法 message digest algorithm5
- */
+*/
 
 type User struct {
 	BaseModel

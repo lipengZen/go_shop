@@ -1,0 +1,17 @@
+host: '172.18.0.1'
+port: 8848
+namespace: '16d89312-79dd-41c5-9a2a-7e07d9cadf2d'
+user: 'nacos'
+password: 'nacos'
+dataid: 'goods_srv.json'
+group: 'dev'
+# name: 'goods_srv'
+# mysql:
+#   host: '127.0.0.1'
+#   port: 3306
+#   user: 'root'
+#   password: 'root'
+#   db: 'shop_goods_srv'
+# consul:
+#   host: '172.18.0.1'
+#   port: 8500  
