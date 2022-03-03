@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"go_shop/go_shop_srvs/inventory_srv/proto"
+	"sync"
 
 	"google.golang.org/grpc"
 )
@@ -32,16 +33,16 @@ func TestInvDetail(goodsId int32) {
 	fmt.Println(rsp.Num)
 }
 
-func TestSell() { //wg *sync.WaitGroup) {
+func TestSell(wg *sync.WaitGroup) { // //{ )
 	/*
 		1. 第一件扣减成功： 第二件： 1. 没有库存信息 2. 库存不足
 		2. 两件都扣减成功
 	*/
-	// defer wg.Done()
+	defer wg.Done()
 	_, err := invClient.Sell(context.Background(), &proto.SellInfo{
 		GoodsInfo: []*proto.GoodsInvInfo{
 			{GoodsId: 421, Num: 1},
-			{GoodsId: 422, Num: 30},
+			// {GoodsId: 422, Num: 30},
 		},
 	})
 	if err != nil {
@@ -74,22 +75,25 @@ func Init() {
 
 func main() {
 	Init()
-	var i int32
-	for i = 421; i <= 840; i++ {
-		TestSetInv(i, 100)
-	}
-	//并发情况之下 库存无法正确的扣减
-	// var wg sync.WaitGroup
-	// wg.Add(20)
-	// for i := 0; i < 20; i++ {
-	// 	go TestSell(&wg)
+	// var i int32
+	// for i = 421; i <= 840; i++ {
+	// 	TestSetInv(i, 100)
 	// }
 
-	// wg.Wait()
+	TestSetInv(421, 100)
+	// TestSetInv(421, 1)
+	//并发情况之下 库存无法正确的扣减
+	var wg sync.WaitGroup
+	wg.Add(20)
+	for i := 0; i < 20; i++ {
+		go TestSell(&wg)
+	}
+
+	wg.Wait()
 
 	// TestReback()
 	// TestSetInv(422, 10)
-	// TestInvDetail(421)
+	TestInvDetail(421)
 	// TestSell()
 
 	conn.Close()

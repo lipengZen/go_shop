@@ -4,6 +4,8 @@ import (
 	"go_shop/go_shop_srvs/inventory_srv/config"
 
 	"gorm.io/gorm"
+	goredislib "github.com/go-redis/redis/v8"
+
 )
 
 var (
@@ -11,6 +13,7 @@ var (
 	ServerConfig config.ServerConfig
 	// NacosConfig config.NacosConfig
 	NacosConfig *config.NacosConfig = &config.NacosConfig{}
+	RedisClient *goredislib.Client
 )
 
 func init() {

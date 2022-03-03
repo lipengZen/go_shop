@@ -34,6 +34,7 @@ func main() {
 	initialize.InitLogger()
 	initialize.InitConfig()
 	initialize.InitDB()
+	initialize.InitRedis()
 
 	zap.S().Info("ip: ", *IP)
 
